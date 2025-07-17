@@ -23,7 +23,7 @@ fn main() {
             primary_window: Some(Window {
                 resolution: WindowResolution::new(1920.0, 1080.0),
                 resizable: false,
-                title: "Bevy-Space".to_string(),
+                title: "PerSevere".to_string(),
                 desired_maximum_frame_latency: core::num::NonZero::new(1u32),
                 ..default()
             }),
@@ -134,6 +134,15 @@ fn setup(
         ));
     }
 
+    // wall
+    commands.spawn((
+        one_way_sprite.clone(),
+        Transform::from_xyz(300.0, 16.0 * 1.0, 0.0).with_scale(Vec3::new(1.0, 4.0, 1.0)),
+        RigidBody::Static,
+        Collider::rectangle(50.0, 50.0),
+        // OneWayPlatform::default(),
+    ));
+
     // Spawn an actor for the user to control
     let actor_size = Vector::new(20.0, 20.0);
     let actor_mesh = meshes.add(Rectangle::from_size(actor_size.f32()));
@@ -168,11 +177,11 @@ fn movement(
         // Assume "mostly stopped" to mean "grounded".
         // You should use raycasting, shapecasting or sensor colliders
         // for more robust ground detection.
-        if linear_velocity.y.abs() < 0.1
-            && !keyboard_input.pressed(KeyCode::ArrowDown)
-            && keyboard_input.just_pressed(KeyCode::Space)
-        {
-            linear_velocity.y = jump_impulse.0;
+        if keyboard_input.just_pressed(KeyCode::Space) {
+            info!("linear_velocity.y {:?}", linear_velocity.y);
+            if linear_velocity.y.abs() < 50.0 && !keyboard_input.pressed(KeyCode::ArrowDown) {
+                linear_velocity.y = jump_impulse.0;
+            }
         }
     }
 }

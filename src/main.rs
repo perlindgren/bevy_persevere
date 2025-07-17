@@ -13,13 +13,23 @@ use bevy::{
         system::{SystemParam, lifetimeless::Read},
     },
     prelude::*,
+    window::WindowResolution,
 };
 // use examples_common_2d::ExampleCommonPlugin;
 
 fn main() {
     App::new()
-        .add_plugins((
-            DefaultPlugins,
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                resolution: WindowResolution::new(1920.0, 1080.0),
+                resizable: false,
+                title: "Bevy-Space".to_string(),
+                desired_maximum_frame_latency: core::num::NonZero::new(1u32),
+                ..default()
+            }),
+            ..default()
+        }))
+        .add_plugins(
             // ExampleCommonPlugin,
             PhysicsPlugins::default()
                 // Specify a units-per-meter scaling factor, 1 meter = 20 pixels.
@@ -27,7 +37,7 @@ fn main() {
                 .with_length_unit(20.0)
                 // Add our custom collision hooks.
                 .with_collision_hooks::<PlatformerCollisionHooks>(),
-        ))
+        )
         .insert_resource(ClearColor(Color::srgb(0.05, 0.05, 0.1)))
         .insert_resource(Gravity(Vector::NEG_Y * 1000.0))
         .add_systems(Startup, setup)
